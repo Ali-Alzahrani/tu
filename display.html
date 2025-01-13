@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entry Permission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .entry-detail {
+            margin: 15px 0;
+        }
+        .entry-detail span {
+            font-weight: bold;
+        }
+        .allowed-time {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Entry Permission Details</h1>
+        <div id="entryDetails">
+            <!-- Details will be inserted dynamically here -->
+        </div>
+    </div>
+    <script>
+        // Parse the query string from the URL
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        // Get the "data" parameter
+        const data = urlParams.get('data');
+        if (data) {
+            // Parse the JSON string
+            const entryData = JSON.parse(decodeURIComponent(data));
+
+            // Create HTML content dynamically
+            const detailsDiv = document.getElementById('entryDetails');
+            detailsDiv.innerHTML = `
+                <div class="entry-detail"><span>Name:</span> ${entryData.name}</div>
+                <div class="entry-detail"><span>ID Number:</span> ${entryData.idNumber}</div>
+                <div class="entry-detail"><span>Gate Number:</span> ${entryData.gateNumber}</div>
+                <div class="entry-detail"><span>Allowed Date & Time:</span> <span class="allowed-time">${entryData.allowedTime}</span></div>
+            `;
+        } else {
+            document.getElementById('entryDetails').innerHTML = `<p>Error: No data found!</p>`;
+        }
+    </script>
+</body>
+</html>

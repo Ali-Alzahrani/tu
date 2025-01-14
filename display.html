@@ -73,24 +73,13 @@
 
             // Function to check permission status
             function checkPermissionStatus() {
-            // Append "Z" to indicate UTC time if not already present
-            const allowedTimeString = entryData.allowedTime.includes("Z")
-                ? entryData.allowedTime
-                : entryData.allowedTime + "Z";
-
-            // Parse the allowed time
-            const allowedTime = new Date(allowedTimeString);
-
-            // Extract duration in hours
-            const durationHours = parseInt(entryData.duration);
-
-            // Calculate expiration time
+            // Replace "T" with a space for Safari compatibility
+            const allowedTime = new Date(entryData.allowedTime.replace("T", " "));
+            const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
             const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
-
-            // Get current time
             const currentTime = new Date();
 
-            console.log("Allowed Time:", allowedTime);
+            console.log("Allowed Time:", allowedTime); // Debug logs
             console.log("Duration (hours):", durationHours);
             console.log("Expiration Time:", expirationTime);
             console.log("Current Time:", currentTime);
@@ -98,17 +87,19 @@
             const statusMessage = document.getElementById("statusMessage");
 
             if (currentTime < allowedTime) {
+                // If current time is before allowed time
                 statusMessage.innerHTML = "Permission has not started yet";
                 statusMessage.style.color = "orange";
             } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
+                // If current time is within the allowed time and duration
                 statusMessage.innerHTML = "They are allowed";
                 statusMessage.style.color = "green";
             } else {
+                // If current time is after the expiration time
                 statusMessage.innerHTML = "Permission has expired";
                 statusMessage.style.color = "red";
             }
         }
-
 
 
         // Run the function

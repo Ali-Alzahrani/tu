@@ -73,35 +73,37 @@
 
             // Function to check permission status
             function checkPermissionStatus() {
-                const allowedTime = new Date(entryData.allowedTime);
-                const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
-                const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
-                const currentTime = new Date();
+            // Replace "T" with a space for Safari compatibility
+            const allowedTime = new Date(entryData.allowedTime.replace("T", " "));
+            const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
+            const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
+            const currentTime = new Date();
 
-                console.log("Allowed Time:", allowedTime); // Debug logs
-                console.log("Duration (hours):", durationHours);
-                console.log("Expiration Time:", expirationTime);
-                console.log("Current Time:", currentTime);
+            console.log("Allowed Time:", allowedTime); // Debug logs
+            console.log("Duration (hours):", durationHours);
+            console.log("Expiration Time:", expirationTime);
+            console.log("Current Time:", currentTime);
 
-                const statusMessage = document.getElementById("statusMessage");
+            const statusMessage = document.getElementById("statusMessage");
 
-                if (currentTime < allowedTime) {
-                    // If current time is before allowed time
-                    statusMessage.innerHTML = "Permission has not started yet";
-                    statusMessage.style.color = "orange";
-                } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
-                    // If current time is within the allowed time and duration
-                    statusMessage.innerHTML = "They are allowed";
-                    statusMessage.style.color = "green";
-                } else {
-                    // If current time is after the expiration time
-                    statusMessage.innerHTML = "Permission has expired";
-                    statusMessage.style.color = "red";
-                }
+            if (currentTime < allowedTime) {
+                // If current time is before allowed time
+                statusMessage.innerHTML = "Permission has not started yet";
+                statusMessage.style.color = "orange";
+            } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
+                // If current time is within the allowed time and duration
+                statusMessage.innerHTML = "They are allowed";
+                statusMessage.style.color = "green";
+            } else {
+                // If current time is after the expiration time
+                statusMessage.innerHTML = "Permission has expired";
+                statusMessage.style.color = "red";
             }
+        }
 
-            // Run the function
-            checkPermissionStatus();
+
+        // Run the function
+        checkPermissionStatus();
         } else {
             document.getElementById("entryDetails").innerHTML = `<p>Error: No data found!</p>`;
         }

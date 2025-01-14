@@ -42,30 +42,58 @@
         <div id="entryDetails">
             <!-- Details will be inserted dynamically here -->
         </div>
+
+        <div id="statusMessage" style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #2c3e50;"></div>
+
     </div>
     <script>
         // Parse the query string from the URL
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const data = urlParams.get('data');
 
-        // Get the "data" parameter
-        const data = urlParams.get('data');
-        
-        if (data) {
-        const entryData = JSON.parse(decodeURIComponent(data));
+    if (data) {
+    const entryData = JSON.parse(decodeURIComponent(data));
 
-        // Create HTML content dynamically
-        const detailsDiv = document.getElementById("entryDetails");
-        detailsDiv.innerHTML = `
+    // Create HTML content dynamically
+    const detailsDiv = document.getElementById("entryDetails");
+    detailsDiv.innerHTML = `
         <div class="entry-detail"><span>Name:</span> ${entryData.name}</div>
         <div class="entry-detail"><span>ID Number:</span> ${entryData.idNumber}</div>
         <div class="entry-detail"><span>Gate Number:</span> ${entryData.gateNumber}</div>
         <div class="entry-detail"><span>Allowed Date & Time:</span> <span class="allowed-time">${entryData.allowedTime}</span></div>
         <div class="entry-detail"><span>Duration:</span> ${entryData.duration}</div>
     `;
-} else {
-    document.getElementById("entryDetails").innerHTML = `<p>Error: No data found!</p>`;
-}
+
+    // Function to check permission status
+    function checkPermissionStatus() {
+        const allowedTime = new Date(entryData.allowedTime);
+        const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
+        const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
+        const currentTime = new Date();
+
+        const statusMessage = document.getElementById("statusMessage");
+
+        if (currentTime < allowedTime) {
+            // If current time is before allowed time
+            statusMessage.innerHTML = "Permission has not started yet";
+            statusMessage.style.color = "orange";
+        } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
+            // If current time is within the allowed time and duration
+            statusMessage.innerHTML = "They are allowed";
+            statusMessage.style.color = "green";
+        } else {
+            // If current time is after the expiration time
+            statusMessage.innerHTML = "Permission has expired";
+            statusMessage.style.color = "red";
+        }
+    }
+
+    // Run the function
+    checkPermissionStatus();
+    } else {
+        document.getElementById("entryDetails").innerHTML = `<p>Error: No data found!</p>`;
+    }
 
     </script>
 </body>

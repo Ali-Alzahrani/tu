@@ -51,6 +51,8 @@
         <div id="statusMessage"></div>
     </div>
     <script>
+        console.log("Script loaded successfully."); // Debug log to ensure script runs
+
         // Parse the query string from the URL
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -75,6 +77,11 @@
                 const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
                 const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
                 const currentTime = new Date();
+
+                console.log("Allowed Time:", allowedTime); // Debug logs
+                console.log("Duration (hours):", durationHours);
+                console.log("Expiration Time:", expirationTime);
+                console.log("Current Time:", currentTime);
 
                 const statusMessage = document.getElementById("statusMessage");
 

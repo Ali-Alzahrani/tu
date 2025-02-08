@@ -71,24 +71,6 @@
             // Set category heading text
             categoryHeading.textContent = entryData.category || "Unknown Category";
 
-            // Apply background color based on category
-            switch (entryData.category) {
-                case "Maintenance":
-                    container.style.backgroundColor = "#3498db"; // Light Blue
-                    break;
-                case "Food Supply":
-                    container.style.backgroundColor = "#2ecc71"; // Light Green
-                    break;
-                case "Equipments":
-                    container.style.backgroundColor = "#f39c12"; // Light Orange
-                    break;
-                case "Employee":
-                    container.style.backgroundColor = "#95a5a6"; // Light Gray
-                    break;
-                default:
-                    container.style.backgroundColor = "#f4f4f9"; // Default Background
-            }
-
             // Create HTML content dynamically
             const detailsDiv = document.getElementById("entryDetails");
             detailsDiv.innerHTML = `
@@ -103,7 +85,7 @@
                 <div class="entry-detail"><span>Duration:</span> ${entryData.duration}</div>
             `;
 
-            // Function to check permission status
+            // Function to check permission status and change background color
             function checkPermissionStatus() {
                 // Replace "T" with a space for Safari compatibility
                 const allowedTime = new Date(entryData.allowedTime.replace("T", " "));
@@ -122,14 +104,17 @@
                     // If current time is before allowed time
                     statusMessage.innerHTML = "Permission has not started yet";
                     statusMessage.style.color = "orange";
+                    container.style.backgroundColor = "#f1c40f"; // Yellow
                 } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
                     // If current time is within the allowed time and duration
                     statusMessage.innerHTML = "They are allowed";
                     statusMessage.style.color = "green";
+                    container.style.backgroundColor = "#2ecc71"; // Green
                 } else {
                     // If current time is after the expiration time
                     statusMessage.innerHTML = "Permission has expired";
                     statusMessage.style.color = "red";
+                    container.style.backgroundColor = "#e74c3c"; // Red
                 }
             }
 

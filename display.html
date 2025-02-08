@@ -3,110 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entry Permission</title>
+    <title>QR Code Entry Permission</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 10px;
-            background-color: #f4f4f9;
-            color: #333;
         }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .entry-detail {
-            margin: 15px 0;
-        }
-        .entry-detail span {
-            font-weight: bold;
-        }
-        .allowed-time {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        #statusMessage {
+        .info-container {
+            border: 1px solid #ddd;
+            padding: 10px;
             margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Entry Permission Details</h1>
-        <div id="entryDetails">
-            <!-- Details will be inserted dynamically here -->
-        </div>
-        <div id="statusMessage"></div>
+    <h1>Entry Permission Details</h1>
+    <div class="info-container">
+        <p><strong>Name:</strong> <span id="display-name"></span></p>
+        <p><strong>ID Number:</strong> <span id="display-idNumber"></span></p>
+        <p><strong>Occupation:</strong> <span id="display-occupation"></span></p>
+        <p><strong>Permission Category:</strong> <span id="display-category"></span></p>
+        <p><strong>Car Plate Number:</strong> <span id="display-carPlate"></span></p>
+        <p><strong>Organization:</strong> <span id="display-organization"></span></p>
+        <p><strong>Amount:</strong> <span id="display-amount"></span></p>
+        <p><strong>Gate Number:</strong> <span id="display-gateNumber"></span></p>
+        <p><strong>Allowed Date and Time:</strong> <span id="display-allowedTime"></span></p>
+        <p><strong>Duration:</strong> <span id="display-duration"></span></p>
     </div>
+
     <script>
-        console.log("Script loaded successfully."); // Debug log to ensure script runs
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = JSON.parse(decodeURIComponent(urlParams.get("data")));
 
-        // Parse the query string from the URL
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const data = urlParams.get('data');
-
-        if (data) {
-            const entryData = JSON.parse(decodeURIComponent(data));
-
-            // Create HTML content dynamically
-            const detailsDiv = document.getElementById("entryDetails");
-            detailsDiv.innerHTML = `
-                <div class="entry-detail"><span>Name:</span> ${entryData.name}</div>
-                <div class="entry-detail"><span>ID Number:</span> ${entryData.idNumber}</div>
-                <div class="entry-detail"><span>Gate Number:</span> ${entryData.gateNumber}</div>
-                <div class="entry-detail"><span>Allowed Date & Time:</span> <span class="allowed-time">${entryData.allowedTime}</span></div>
-                <div class="entry-detail"><span>Duration:</span> ${entryData.duration}</div>
-            `;
-
-            // Function to check permission status
-            function checkPermissionStatus() {
-            // Replace "T" with a space for Safari compatibility
-            const allowedTime = new Date(entryData.allowedTime.replace("T", " "));
-            const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
-            const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
-            const currentTime = new Date();
-
-            console.log("Allowed Time:", allowedTime); // Debug logs
-            console.log("Duration (hours):", durationHours);
-            console.log("Expiration Time:", expirationTime);
-            console.log("Current Time:", currentTime);
-
-            const statusMessage = document.getElementById("statusMessage");
-
-            if (currentTime < allowedTime) {
-                // If current time is before allowed time
-                statusMessage.innerHTML = "Permission has not started yet";
-                statusMessage.style.color = "orange";
-            } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
-                // If current time is within the allowed time and duration
-                statusMessage.innerHTML = "They are allowed";
-                statusMessage.style.color = "green";
-            } else {
-                // If current time is after the expiration time
-                statusMessage.innerHTML = "Permission has expired";
-                statusMessage.style.color = "red";
-            }
-        }
-
-
-        // Run the function
-        checkPermissionStatus();
-        } else {
-            document.getElementById("entryDetails").innerHTML = `<p>Error: No data found!</p>`;
-        }
+        document.getElementById("display-name").textContent = data.name;
+        document.getElementById("display-idNumber").textContent = data.idNumber;
+        document.getElementById("display-occupation").textContent = data.occupation;
+        document.getElementById("display-category").textContent = data.category;
+        document.getElementById("display-carPlate").textContent = data.carPlate;
+        document.getElementById("display-organization").textContent = data.organization;
+        document.getElementById("display-amount").textContent = data.amount;
+        document.getElementById("display-gateNumber").textContent = data.gateNumber;
+        document.getElementById("display-allowedTime").textContent = data.allowedTime;
+        document.getElementById("display-duration").textContent = data.duration;
     </script>
 </body>
 </html>

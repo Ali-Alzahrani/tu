@@ -1,128 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entry Permission</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 10px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease-in-out; /* Smooth transition */
-        }
-        h1, h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .entry-detail {
-            margin: 15px 0;
-        }
-        .entry-detail span {
-            font-weight: bold;
-        }
-        .allowed-time {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        #statusMessage {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container" id="container">
-        <h1>Entry Permission Details</h1>
-        <h2 id="categoryHeading"></h2> <!-- Permission Category Heading -->
-        <div id="entryDetails">
-            <!-- Details will be inserted dynamically here -->
-        </div>
-        <div id="statusMessage"></div>
-    </div>
+function checkPermissionStatus() {
+    let allowedTimeString = entryData.allowedTime;
 
-    <script>
-        console.log("Script loaded successfully."); // Debug log to ensure script runs
+    // ✅ Extract date components manually (Fix for Safari)
+    let dateParts = allowedTimeString.split("T")[0].split("-");
+    let timeParts = allowedTimeString.split("T")[1].split(":");
 
-        // Parse the query string from the URL
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const data = urlParams.get('data');
+    let allowedTime = new Date(
+        parseInt(dateParts[0]),  // Year
+        parseInt(dateParts[1]) - 1,  // Month (0-based index)
+        parseInt(dateParts[2]),  // Day
+        parseInt(timeParts[0]),  // Hours
+        parseInt(timeParts[1])   // Minutes
+    );
 
-        if (data) {
-            const entryData = JSON.parse(decodeURIComponent(data));
+    const durationHours = parseInt(entryData.duration);
+    const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
+    const currentTime = new Date();
 
-            // Reference to the container and category heading
-            const container = document.getElementById("container");
-            const categoryHeading = document.getElementById("categoryHeading");
+    console.log("Allowed Time:", allowedTime);
+    console.log("Duration (hours):", durationHours);
+    console.log("Expiration Time:", expirationTime);
+    console.log("Current Time:", currentTime);
 
-            // Set category heading text
-            categoryHeading.textContent = entryData.category || "Unknown Category";
+    const statusMessage = document.getElementById("statusMessage");
+    const container = document.querySelector(".container");
 
-            // Create HTML content dynamically
-            const detailsDiv = document.getElementById("entryDetails");
-            detailsDiv.innerHTML = `
-                <div class="entry-detail"><span>Name:</span> ${entryData.name}</div>
-                <div class="entry-detail"><span>ID Number:</span> ${entryData.idNumber}</div>
-                <div class="entry-detail"><span>Occupation:</span> ${entryData.occupation}</div>
-                <div class="entry-detail"><span>Car Plate Number:</span> ${entryData.carPlate || "N/A"}</div>
-                <div class="entry-detail"><span>Organization:</span> ${entryData.organization}</div>
-                <div class="entry-detail"><span>Amount:</span> ${entryData.amount}</div>
-                <div class="entry-detail"><span>Gate Number:</span> ${entryData.gateNumber}</div>
-                <div class="entry-detail"><span>Allowed Date & Time:</span> <span class="allowed-time">${entryData.allowedTime}</span></div>
-                <div class="entry-detail"><span>Duration:</span> ${entryData.duration}</div>
-            `;
-
-            // Function to check permission status and change background color
-            function checkPermissionStatus() {
-                // Replace "T" with a space for Safari compatibility
-                const allowedTime = new Date(entryData.allowedTime.replace("T", " "));
-                const durationHours = parseInt(entryData.duration); // Extract hours from the duration field
-                const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
-                const currentTime = new Date();
-
-                console.log("Allowed Time:", allowedTime); // Debug logs
-                console.log("Duration (hours):", durationHours);
-                console.log("Expiration Time:", expirationTime);
-                console.log("Current Time:", currentTime);
-
-                const statusMessage = document.getElementById("statusMessage");
-
-                if (currentTime < allowedTime) {
-                    // If current time is before allowed time
-                    statusMessage.innerHTML = "Permission has not started yet";
-                    statusMessage.style.color = "orange";
-                    container.style.backgroundColor = "#f1c40f"; // Yellow
-                } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
-                    // If current time is within the allowed time and duration
-                    statusMessage.innerHTML = "They are allowed";
-                    statusMessage.style.color = "green";
-                    container.style.backgroundColor = "#2ecc71"; // Green
-                } else {
-                    // If current time is after the expiration time
-                    statusMessage.innerHTML = "Permission has expired";
-                    statusMessage.style.color = "red";
-                    container.style.backgroundColor = "#e74c3c"; // Red
-                }
-            }
-
-            // Run the function
-            checkPermissionStatus();
-        } else {
-            document.getElementById("entryDetails").innerHTML = `<p>Error: No data found!</p>`;
-        }
-    </script>
-</body>
-</html>
+    if (currentTime < allowedTime) {
+        statusMessage.innerHTML = "Permission has not started yet";
+        statusMessage.style.color = "orange";
+        container.style.backgroundColor = "#f1c40f"; // Yellow
+    } else if (currentTime >= allowedTime && currentTime <= expirationTime) {
+        statusMessage.innerHTML = "They are allowed";
+        statusMessage.style.color = "green";
+        container.style.backgroundColor = "#2ecc71"; // Green
+    } else {
+        statusMessage.innerHTML = "Permission has expired";
+        statusMessage.style.color = "red";
+        container.style.backgroundColor = "#e74c3c"; // Red
+    }
+}

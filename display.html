@@ -19,8 +19,9 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out; /* Smooth transition */
         }
-        h1 {
+        h1, h2 {
             text-align: center;
             color: #2c3e50;
         }
@@ -43,8 +44,9 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="container">
         <h1>Entry Permission Details</h1>
+        <h2 id="categoryHeading"></h2> <!-- Permission Category Heading -->
         <div id="entryDetails">
             <!-- Details will be inserted dynamically here -->
         </div>
@@ -62,13 +64,37 @@
         if (data) {
             const entryData = JSON.parse(decodeURIComponent(data));
 
+            // Reference to the container and category heading
+            const container = document.getElementById("container");
+            const categoryHeading = document.getElementById("categoryHeading");
+
+            // Set category heading text
+            categoryHeading.textContent = entryData.category || "Unknown Category";
+
+            // Apply background color based on category
+            switch (entryData.category) {
+                case "Maintenance":
+                    container.style.backgroundColor = "#3498db"; // Light Blue
+                    break;
+                case "Food Supply":
+                    container.style.backgroundColor = "#2ecc71"; // Light Green
+                    break;
+                case "Equipments":
+                    container.style.backgroundColor = "#f39c12"; // Light Orange
+                    break;
+                case "Employee":
+                    container.style.backgroundColor = "#95a5a6"; // Light Gray
+                    break;
+                default:
+                    container.style.backgroundColor = "#f4f4f9"; // Default Background
+            }
+
             // Create HTML content dynamically
             const detailsDiv = document.getElementById("entryDetails");
             detailsDiv.innerHTML = `
                 <div class="entry-detail"><span>Name:</span> ${entryData.name}</div>
                 <div class="entry-detail"><span>ID Number:</span> ${entryData.idNumber}</div>
                 <div class="entry-detail"><span>Occupation:</span> ${entryData.occupation}</div>
-                <div class="entry-detail"><span>Permission Category:</span> ${entryData.category}</div>
                 <div class="entry-detail"><span>Car Plate Number:</span> ${entryData.carPlate || "N/A"}</div>
                 <div class="entry-detail"><span>Organization:</span> ${entryData.organization}</div>
                 <div class="entry-detail"><span>Amount:</span> ${entryData.amount}</div>

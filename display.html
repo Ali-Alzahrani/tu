@@ -89,31 +89,28 @@
             function checkPermissionStatus() {
             let allowedTimeString = entryData.allowedTime;
 
-            // ✅ Manually extract date and time components
-            let dateTimeParts = allowedTimeString.split("T");
-            let dateParts = dateTimeParts[0].split("-");
-            let timeParts = dateTimeParts[1].split(":");
+            // 🌟 Ensure compatibility with Safari
+            if (allowedTimeString.includes("T")) {
+                allowedTimeString = allowedTimeString.replace("T", " "); // Replace 'T' with space
+            }
 
-            // ✅ Create a date object using UTC to avoid Safari's local timezone issues
-            let allowedTime = new Date(Date.UTC(
-                parseInt(dateParts[0]),  // Year
-                parseInt(dateParts[1]) - 1,  // Month (0-based index)
-                parseInt(dateParts[2]),  // Day
-                parseInt(timeParts[0]),  // Hours
-                parseInt(timeParts[1])   // Minutes
-            ));
+            let allowedTime = new Date(allowedTimeString);
+            
+            // 🔴 SAFARI FIX: If date parsing fails, try another format
+            if (isNaN(allowedTime.getTime())) {
+                allowedTime = new Date(allowedTimeString.replace(/-/g, "/")); // Convert 'YYYY-MM-DD' to 'YYYY/MM/DD'
+            }
 
-            // ✅ Handle duration (convert hours into milliseconds)
             const durationHours = parseInt(entryData.duration);
             const expirationTime = new Date(allowedTime.getTime() + durationHours * 60 * 60 * 1000);
-            const currentTime = new Date(); // Current local time
+            const currentTime = new Date();
 
-            console.log("Allowed Time:", allowedTime.toISOString());
-            console.log("Expiration Time:", expirationTime.toISOString());
-            console.log("Current Time:", currentTime.toISOString());
+            console.log("Allowed Time:", allowedTime); // Debug logs
+            console.log("Duration (hours):", durationHours);
+            console.log("Expiration Time:", expirationTime);
+            console.log("Current Time:", currentTime);
 
             const statusMessage = document.getElementById("statusMessage");
-            const container = document.querySelector(".container");
 
             if (currentTime < allowedTime) {
                 statusMessage.innerHTML = "Permission has not started yet";
@@ -129,7 +126,10 @@
                 container.style.backgroundColor = "#e74c3c"; // Red
             }
         }
-    
+
+
+           
+                
 
             // Run the function
             checkPermissionStatus();
